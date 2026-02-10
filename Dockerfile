@@ -1,33 +1,28 @@
-# Copyright The OpenTelemetry Authors
-# SPDX-License-Identifier: Apache-2.0
-
-FROM node:22 AS builder
+FROM node:20 AS builder
 
 WORKDIR /app
 
-COPY ./package*.json ./
+COPY package*.json ./
 
 RUN npm ci
 
-COPY . ./
+COPY . .
 
 RUN npm run build
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------
 
-FROM node:22-alpine
+FROM node:20-slim
 
 WORKDIR /app
 
-COPY ./package*.json ./
+COPY package*.json ./
 
-#RUN npm ci --only=production
 RUN npm ci --omit=dev
 
-COPY --from=builder /app/src/instrumentation.ts ./instrumentation.ts
-COPY --from=builder /app/next.config.mjs ./next.config.mjs
-
 COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/next.config.mjs ./next.config.mjs
+COPY --from=builder /app/src/instrumentation.ts ./instrumentation.ts
 
 EXPOSE 4000
 

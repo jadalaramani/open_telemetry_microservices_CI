@@ -1,0 +1,6 @@
+ kubectl create ns microservice
+ kubectl apply -f serviceaccount.yaml
+ kubectl apply -f role.yaml 
+ kubectl apply -f rolebinding.yaml 
+ kubectl apply -f secret.yaml -n microservice
+ kubectl -n microservice describe secret mysecretname
